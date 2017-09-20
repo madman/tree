@@ -15,7 +15,6 @@ class ApiVersionController {
 
 	public function __invoke()
 	{
-
 		return new JsonResponse(['version' => $this->version]);
 	}
 }
