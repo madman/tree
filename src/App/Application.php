@@ -31,6 +31,8 @@ class Application extends \Silex\Application {
             'translator.messages' => [],
         ]);
 
+        $app->register(new \Silex\Provider\ServiceControllerServiceProvider());
+
         $app->register(new \App\Provider\ServiceProvider());
 
         $app->mount('/api/v1', new \App\Provider\ControllerProvider());

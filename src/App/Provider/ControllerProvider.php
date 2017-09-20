@@ -15,12 +15,8 @@ class ControllerProvider implements ControllerProviderInterface {
         $controllers = $app['controllers_factory'];
 
         $controllers
-            ->get('/', function(Request $request) use ($app) {
-
-                return $app->json(['version' => '0.0.1']);
-            })
+            ->get('/', "app.controller.version")
             ->bind('version');
-
 
         return $controllers;
     }
