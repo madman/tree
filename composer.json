@@ -1,0 +1,26 @@
+{
+    "name": "madman/tree",
+    "description": "Store data as tree",
+    "type": "project",
+    "license": "MIT License",
+    "authors": [
+        {
+            "name": "Yuriy Prokopets",
+            "email": "yuriy.prokopets@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=5.4",
+        "silex/silex": "~2.0",
+        "monolog/monolog": "^1.23",
+        "doctrine/dbal": "^2.5",
+        "symfony/console": "^3.3",
+        "symfony/form": "^3.3",
+        "symfony/validator": "^3.3",
+        "symfony/security": "^3.3"
+    },
+     "config": {
+        "bin-dir": "bin"
+    }
+}
