@@ -1,0 +1,44 @@
+nginx:
+  build: ./docker/nginx
+  ports:
+    - "8081:80"
+  links:
+    - fpm
+  volumes_from:
+    - files
+  volumes:
+    - ./var/log/nginx/:/var/log/nginx
+
+fpm:
+  build: ./docker/fpm
+  volumes_from:
+    - files
+  links:
+    - mysql
+  privileged: true
+
+composer:
+  build: ./docker/composer
+  environment:
+    - SECRET=tree
+  volumes_from: 
+    - files
+  links:
+    - mysql
+
+mysql:
+  image: mysql:5.5
+  environment:
+    - MYSQL_ROOT_PASSWORD=tree
+    - MYSQL_DATABASE=tree
+    - MYSQL_USER=tree
+    - MYSQL_PASSWORD=tree
+  volumes:
+    - ./data/db:/var/lib/mysql
+    - ./data/dumps:/docker-entrypoint-initdb.d
+
+files:
+  image: alpine:3.4
+  volumes:
+    - .:/data/www/site
+  command: /bin/ash
