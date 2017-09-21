@@ -26,6 +26,13 @@ composer:
   links:
     - mysql
 
+console:
+  build: ./docker/console
+  volumes_from: 
+    - files
+  links:
+    - mysql    
+
 mysql:
   image: mysql:5.5
   environment:

@@ -31,11 +31,30 @@ class Application extends \Silex\Application {
             'translator.messages' => [],
         ]);
 
+        $app->register(new \Knp\Provider\ConsoleServiceProvider(), [
+            'console.name' => 'tree',
+            'console.version' => '1.0.0',
+        ]);        
+
         $app->register(new \Silex\Provider\ServiceControllerServiceProvider());
 
+        /* */
         $app->register(new \App\Provider\ServiceProvider());
 
-        $app->mount('/api/v1', new \App\Provider\ControllerProvider());
+
+        /* */
+        $this->registerControllers();
+        $this->registerCommands();
 	}
+
+    protected function registerControllers()
+    {
+        $this->mount('/api/v1', new \App\Provider\ControllerProvider());
+    }
+
+    protected function registerCommands()
+    {
+        $this['console']->add(new \App\Command\ApiVersionCommand());
+    }
 	
 }
