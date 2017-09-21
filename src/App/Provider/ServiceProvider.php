@@ -27,5 +27,9 @@ class ServiceProvider implements ServiceProviderInterface {
             return new \App\Controller\GetRootController($pimple['service.tree']);
         };
 
+        $pimple['app.controller.createroot'] = function() use ($pimple) {
+            return new \App\Controller\CreateRootController($pimple['service.tree'], $pimple['form.factory']);
+        };
+
     }
 }

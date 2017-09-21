@@ -19,8 +19,12 @@ class ControllerProvider implements ControllerProviderInterface {
             ->bind('version');
 
         $controllers
-            ->get('/', "app.controller.getroot")
+            ->get('/root', "app.controller.getroot")
             ->bind('getroot');
+
+        $controllers
+            ->post('/create', "app.controller.createroot")
+            ->bind('createroot');
 
 
         return $controllers;

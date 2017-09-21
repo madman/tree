@@ -31,7 +31,7 @@ class TreeService {
         $this->storage->createRoot($root->getId(), $root->getName(), $root->getTitle(), $root->getContent());
         $metadata = new Metadata(1,2,1);
 
-        $this->map->add($node, $metadata);
+        $this->map->add($root, $metadata);
     }
 
     /**

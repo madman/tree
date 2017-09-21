@@ -40,11 +40,9 @@ class CreateTreeCommand extends Command {
             $content = '';
         }
 
-        $node = Node::create($name, $title, $content = '');
+        $root = Node::create($name, $title, $content);
+        $app['service.tree']->create($root);
 
-        $app['service.tree']->create($node);
-        
-
-        $output->writeln('Root node was created');
+        $output->writeln('Root node was created: ' . json_encode($root));
     }    
 }

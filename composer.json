@@ -20,7 +20,8 @@
         "symfony/validator": "^3.3",
         "symfony/security": "^3.3",
         "ramsey/uuid": "^3.7",
-        "knplabs/console-service-provider": "^2.1"
+        "knplabs/console-service-provider": "^2.1",
+        "symfony/config": "^3.3"
     },
      "config": {
         "bin-dir": "bin"
