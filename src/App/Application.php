@@ -55,6 +55,9 @@ class Application extends \Silex\Application {
     protected function registerCommands()
     {
         $this['console']->add(new \App\Command\ApiVersionCommand());
+        $this['console']->add(new \App\Command\CreateTreeCommand());
+        $this['console']->add(new \App\Command\GetRootCommand());
+        $this['console']->add(new \App\Command\FindByIdCommand());
     }
 	
 }
