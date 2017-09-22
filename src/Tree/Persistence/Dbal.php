@@ -2,6 +2,7 @@
 
 namespace Tree\Persistence;
 
+use Tree\Metadata;
 use Tree\Exception\TreeException;
 use Tree\Exception\NotFoundException;
 
@@ -56,12 +57,7 @@ class Dbal implements PersistenceInterface {
 
         $nodes = [];
         while ($row = $stmt->fetch()) {
-            $nodes[] = [
-                'id' => $row['id'],
-                'name' => $row['name'],
-                'title' => $row['title'],
-                'level' => $row['level'],
-            ];
+            $nodes[] = $row;
         }
 
         return $nodes;
@@ -169,17 +165,17 @@ class Dbal implements PersistenceInterface {
 
     /**
      * @param Metadata   $matadata
+     * @param string $id
      * @param string $name
      * @param string $title
      * @param string $text
      */
-    public function addChildTo(Metadata $matadata, $name, $title, $content = '')
+    public function addChildTo(Metadata $matadata, $id, $name, $title, $content = '')
     {
         $this->dbal->beginTransaction();
         try {
             $this->dbal->executeUpdate('UPDATE `tree` SET `right` = `right` + 2, `left` = IF(`left` > ?, `left` + 2, `left`) WHERE `right` >= ?', [$matadata->getRight(), $matadata->getRight()]);
-            $this->dbal->executeUpdate('INSERT INTO `tree` SET `left` = ?, `right` = ? + 1, `level` = ? + 1, `name` = ?, `title` = ?, `content` = ?', [$matadata->getRight(), $matadata->getRight(), $matadata->getLevel(), $name, $title, $content]);
-            $id = $this->dbal->lastInsertId();
+            $this->dbal->executeUpdate('INSERT INTO `tree` SET `id` = ?, `name` = ?, `title` = ?, `content` = ?, `left` = ?, `right` = ? + 1, `level` = ? + 1', [$id, $name, $title, $content, $matadata->getRight(), $matadata->getRight(), $matadata->getLevel()]);
             $this->dbal->commit();
 
         } catch (\Exception $e) {
@@ -187,8 +183,6 @@ class Dbal implements PersistenceInterface {
 
             throw new TreeException("Трапилося якесь неподобство", 0, $e);
         }
-
-        return $id;
     }
 
     public function delete(Metadata $matadata)

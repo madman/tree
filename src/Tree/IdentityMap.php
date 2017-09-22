@@ -26,7 +26,7 @@ class IdentityMap {
 
     public function getNode(Uuid $id)
     {
-        if (!$this->exists($id->toString())) {
+        if (!$this->has($id)) {
             throw new NotFoundException();
         }
 
@@ -35,7 +35,7 @@ class IdentityMap {
 
     public function getMetadata(Uuid $id)
     {
-        if (!$this->exists($id->toString())) {
+        if (!$this->has($id)) {
             throw new NotFoundException();
         }
 

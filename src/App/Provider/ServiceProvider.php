@@ -31,5 +31,34 @@ class ServiceProvider implements ServiceProviderInterface {
             return new \App\Controller\CreateRootController($pimple['service.tree'], $pimple['form.factory']);
         };
 
+        $pimple['app.controller.findbyid'] = function() use ($pimple) {
+            return new \App\Controller\FindByIdController($pimple['service.tree']);
+        };
+
+        $pimple['app.controller.findbyname'] = function() use ($pimple) {
+            return new \App\Controller\FindByNameController($pimple['service.tree']);
+        };
+
+        $pimple['app.controller.findbypath'] = function() use ($pimple) {
+            return new \App\Controller\FindByPathController($pimple['service.tree']);
+        };
+
+        $pimple['app.controller.parent'] = function() use ($pimple) {
+            return new \App\Controller\ParentController($pimple['service.tree']);
+        };
+
+        $pimple['app.controller.parents'] = function() use ($pimple) {
+            return new \App\Controller\ParentsController($pimple['service.tree']);
+        };
+
+        $pimple['app.controller.children'] = function() use ($pimple) {
+            return new \App\Controller\ChildrenController($pimple['service.tree']);
+        };
+
+        $pimple['app.controller.addchildto'] = function() use ($pimple) {
+            return new \App\Controller\AddChildToController($pimple['service.tree'], $pimple['form.factory']);
+        };
+
+
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Tree\Persistence;
 
+use Tree\Metadata;
+
 interface PersistenceInterface {
 
     public function findById($id);
@@ -13,6 +15,6 @@ interface PersistenceInterface {
     public function getRoot();
     public function createRoot($id, $name, $title, $content);
     public function updateNode($id, $newName, $newTitle, $newContent);
-    public function addChildTo(Metadata $matadata, $name, $title, $content = '');
+    public function addChildTo(Metadata $matadata, $id, $name, $title, $content = '');
     public function delete(Metadata $matadata);
 }

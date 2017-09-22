@@ -34,4 +34,9 @@ class Metadata {
     {
         return new static($raw['left'], $raw['right'], $raw['level']);
     }
+
+    public function isRoot()
+    {
+        return 1 == $this->left;
+    }
 }

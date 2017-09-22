@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Symfony\Component\HttpFoundation\Request;
+
 class Application extends \Silex\Application {
 
 	public function __construct()
@@ -9,6 +11,12 @@ class Application extends \Silex\Application {
 		parent::__construct();
 
 		$app = $this;
+
+        $app['debug'] = true;
+
+        $app->error(function (\Exception $e, Request $request, $code) use ($app) {
+            return $app->json(array("error" => $e->getMessage()), $code);
+        });
 
 		$app->register(new \Silex\Provider\DoctrineServiceProvider(), [
             'db.options' => [

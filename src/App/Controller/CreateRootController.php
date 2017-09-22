@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Tree\TreeService;
+use Tree\Exception\RootAlreadyExistsException;
 use Tree\Node;
 use App\Event\CreateRootEvent;
 
@@ -41,9 +42,20 @@ class CreateRootController {
             $event = $form->getData();
 
             $root = Node::create($event->name, $event->title, $event->content);
-            $this->service->create($root);
 
-            return new JsonResponse(['root' => $root]);
+            try {
+                $this->service->create($root);
+
+                return new JsonResponse(['root' => $root]);
+            } catch (RootAlreadyExistsException $e) {
+
+                return new JsonResponse([
+                    'errors' => [
+                        'Root already exists'
+                    ],
+                ]);
+            }
+
         } else {
             $errors = [];
 
