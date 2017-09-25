@@ -9,7 +9,14 @@
             "email": "yuriy.prokopets@gmail.com"
         }
     ],
-    "minimum-stability": "stable",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:madman/security-jwt-service-provider.git"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
         "php": ">=5.4",
         "silex/silex": "~2.0",
@@ -21,7 +28,8 @@
         "symfony/security": "^3.3",
         "ramsey/uuid": "^3.7",
         "knplabs/console-service-provider": "^2.1",
-        "symfony/config": "^3.3"
+        "symfony/config": "^3.3",
+        "madman/security-jwt-service-provider": "dev-master"
     },
      "config": {
         "bin-dir": "bin"

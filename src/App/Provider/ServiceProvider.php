@@ -23,6 +23,10 @@ class ServiceProvider implements ServiceProviderInterface {
             return new \App\Controller\ApiVersionController($pimple['api.version']);
         };
 
+        $pimple['app.controller.login'] = function() use ($pimple) {
+            return new \App\Controller\LoginController($pimple['users'], $pimple['security.encoder.digest'], $pimple['security.jwt.encoder']);
+        };
+
         $pimple['app.controller.getroot'] = function() use ($pimple) {
             return new \App\Controller\GetRootController($pimple['service.tree']);
         };
@@ -58,7 +62,6 @@ class ServiceProvider implements ServiceProviderInterface {
         $pimple['app.controller.addchildto'] = function() use ($pimple) {
             return new \App\Controller\AddChildToController($pimple['service.tree'], $pimple['form.factory']);
         };
-
 
     }
 }

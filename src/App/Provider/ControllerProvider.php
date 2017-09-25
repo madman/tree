@@ -19,6 +19,10 @@ class ControllerProvider implements ControllerProviderInterface {
             ->bind('version');
 
         $controllers
+            ->post('/login', "app.controller.login")
+            ->bind('login');
+
+        $controllers
             ->get('/root', "app.controller.getroot")
             ->bind('getroot');
 

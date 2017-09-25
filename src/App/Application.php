@@ -45,8 +45,11 @@ class Application extends \Silex\Application {
         ]);        
 
         $app->register(new \Silex\Provider\ServiceControllerServiceProvider());
+        $app->register(new \Silex\Provider\SecurityServiceProvider());
 
         /* */
+        $app->register(new \App\Provider\SecurityProvider());
+        $app->register(new \Silex\Provider\SecurityJWTServiceProvider());
         $app->register(new \App\Provider\ServiceProvider());
 
 
