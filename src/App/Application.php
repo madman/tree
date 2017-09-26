@@ -52,7 +52,17 @@ class Application extends \Silex\Application {
         $app->register(new \Silex\Provider\SecurityServiceProvider());
 
         /* */
-        $app->register(new \App\Provider\SecurityProvider());
+        $app->register(new \App\Provider\SecurityProvider(), [
+            'security.jwt' => [
+                'secret_key' => 'tree_key_tree',
+                'life_time'  => 86400,
+                'options'    => [
+                    'username_claim' => 'name', // default name, option specifying claim containing username
+                    'header_name' => 'X-Access-Token', // default null, option for usage normal oauth2 header
+                    'token_prefix' => 'Tree',
+                ]   
+            ]
+        ]);
         $app->register(new \Silex\Provider\SecurityJWTServiceProvider());
         $app->register(new \App\Provider\ServiceProvider());
 

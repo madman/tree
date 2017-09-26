@@ -12,16 +12,6 @@ class SecurityProvider implements ServiceProviderInterface {
     {
         $pimple['api.version'] = '0.0.1';
 
-        $pimple['security.jwt'] = [
-            'secret_key' => 'tree_key_tree',
-            'life_time'  => 86400,
-            'options'    => [
-                'username_claim' => 'name', // default name, option specifying claim containing username
-                'header_name' => 'X-Access-Token', // default null, option for usage normal oauth2 header
-                'token_prefix' => 'Tree',
-            ]
-        ];
-
         $pimple['users'] = function () {
             $users = [
                 'admin' => [
