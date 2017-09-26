@@ -18,6 +18,10 @@ class Application extends \Silex\Application {
             return $app->json(array("error" => $e->getMessage()), $code);
         });
 
+        $app->error(function (\Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException $e, Request $request, $code) use ($app) {
+            return $app->json(array("error" => $e->getMessage()), $code);
+        });
+
 		$app->register(new \Silex\Provider\DoctrineServiceProvider(), [
             'db.options' => [
                 'driver' => 'pdo_mysql',

@@ -4,11 +4,21 @@ namespace App\Provider;
 
 use Pimple\ServiceProviderInterface;
 use Pimple\Container;
+use App\Component\Security\JWTListener;
 
 class ServiceProvider implements ServiceProviderInterface {
 
     public function register(Container $pimple)
     {
+        $pimple['security.jwt.authentication_listener'] = function() use ($pimple) {
+            return new JWTListener($pimple['security.token_storage'],
+                $pimple['security.authentication_manager'],
+                $pimple['security.jwt.encoder'],
+                $pimple['security.jwt']['options'],
+                'jwt'
+            );
+        };
+
         $pimple['api.version'] = '0.0.1';
 
         $pimple['service.tree.persistence'] = function() use ($pimple) {
