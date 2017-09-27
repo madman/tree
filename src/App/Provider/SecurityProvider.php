@@ -4,24 +4,14 @@ namespace App\Provider;
 
 use Pimple\ServiceProviderInterface;
 use Pimple\Container;
-use Symfony\Component\Security\Core\User\InMemoryUserProvider;
+use App\Component\UserProvider;
 
 class SecurityProvider implements ServiceProviderInterface {
 
     public function register(Container $pimple)
     {
-        $pimple['api.version'] = '0.0.1';
-
-        $pimple['users'] = function () {
-            $users = [
-                'admin' => [
-                    'roles' => ['ROLE_ADMIN'],
-                    'password' => '5FZ2Z8QIkA7UTZ4BYkoC+GsReLf569mSKDsfods6LYQ8t+a8EW9oaircfMpmaLbPBh4FOBiiFyLfuZmTSUwzZg==', // raw password is foo
-                    'enabled' => true,
-                ],
-            ];
-
-            return new InMemoryUserProvider($users);
+        $pimple['users'] = function () use ($pimple) {
+            return new UserProvider($pimple['db']);
         };
 
         $pimple['security.firewalls'] = [

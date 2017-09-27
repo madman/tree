@@ -34,7 +34,7 @@ class ServiceProvider implements ServiceProviderInterface {
         };
 
         $pimple['app.controller.login'] = function() use ($pimple) {
-            return new \App\Controller\LoginController($pimple['users'], $pimple['security.encoder.digest'], $pimple['security.jwt.encoder']);
+            return new \App\Controller\LoginController($pimple['users'], $pimple['security.encoder_factory'], $pimple['security.jwt.encoder']);
         };
 
         $pimple['app.controller.getroot'] = function() use ($pimple) {

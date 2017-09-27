@@ -11,13 +11,13 @@ use Symfony\Component\Security\Core\User\User;
 class LoginController {
      
     protected $userProvider;
-    protected $paswordEncoder;
+    protected $encoderFactory;
     protected $jwtEncoder;
 
-    public function __construct($userProvider, $paswordEncoder, $jwtEncoder)
+    public function __construct($userProvider, $encoderFactory, $jwtEncoder)
     {
         $this->userProvider = $userProvider;
-        $this->paswordEncoder = $paswordEncoder;
+        $this->encoderFactory = $encoderFactory;
         $this->jwtEncoder = $jwtEncoder;
     }
 
@@ -36,7 +36,7 @@ class LoginController {
              */
             $user = $this->userProvider->loadUserByUsername($username);
     
-            if (! $this->paswordEncoder->isPasswordValid($user->getPassword(), $password, '')) {
+            if (!$this->encoderFactory->getEncoder($user)->isPasswordValid($user->getPassword(), $password, '')) {
                 throw new UsernameNotFoundException(sprintf('Username "%s" does not exist.', $username));
             } else {
                 $response = [

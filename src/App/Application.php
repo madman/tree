@@ -79,10 +79,16 @@ class Application extends \Silex\Application {
 
     protected function registerCommands()
     {
+        // api
         $this['console']->add(new \App\Command\ApiVersionCommand());
+
+        // tree
         $this['console']->add(new \App\Command\CreateTreeCommand());
         $this['console']->add(new \App\Command\GetRootCommand());
         $this['console']->add(new \App\Command\FindByIdCommand());
+
+        // users
+        $this['console']->add(new \App\Command\CreateUserCommand());
     }
 	
 }
