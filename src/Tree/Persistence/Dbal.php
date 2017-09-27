@@ -9,10 +9,12 @@ use Tree\Exception\NotFoundException;
 class Dbal implements PersistenceInterface {
 
     protected $dbal;
+    protected $table;
 
-    public function __construct($dbal)
+    public function __construct($dbal, $table = 'tree')
     {
         $this->dbal = $dbal;
+        $this->table = $table;
     }
 
     /**
@@ -22,7 +24,7 @@ class Dbal implements PersistenceInterface {
      */
     public function findById($id) 
     {
-        $node = $this->dbal->fetchAssoc("SELECT * FROM tree WHERE id = :id", ['id' => $id]);
+        $node = $this->dbal->fetchAssoc("SELECT * FROM {$this->table} WHERE id = :id", ['id' => $id]);
 
         if (!$node) {
             throw new NotFoundException("Запис під номером '{$id}' не знайдено");
@@ -37,7 +39,7 @@ class Dbal implements PersistenceInterface {
      */
     public function parent(Metadata $matadata)
     {
-        $parent = $this->dbal->fetchAssoc("SELECT * FROM tree WHERE `left` < ? AND `right` > ? and level = ? - 1 ", [$matadata->getLeft(), $matadata->getRight(), $matadata->getLevel()]);
+        $parent = $this->dbal->fetchAssoc("SELECT * FROM {$this->table} WHERE `left` < ? AND `right` > ? and level = ? - 1 ", [$matadata->getLeft(), $matadata->getRight(), $matadata->getLevel()]);
 
         if (!$parent['id']) {
             throw new NotFoundException("Батьківський елемент не знайдено");
@@ -52,7 +54,7 @@ class Dbal implements PersistenceInterface {
      */
     public function parents(Metadata $matadata)
     {
-        $sql = "SELECT * FROM tree WHERE `left` <= :left and `right` >= :right and level <> 1 ORDER BY `left` ";
+        $sql = "SELECT * FROM {$this->table} WHERE `left` <= :left and `right` >= :right and level <> 1 ORDER BY `left` ";
         $stmt = $this->dbal->executeQuery($sql, ['left' => $matadata->getLeft(), 'right' => $matadata->getRight()]);
 
         $nodes = [];
@@ -69,17 +71,12 @@ class Dbal implements PersistenceInterface {
      */
     public function children(Metadata $matadata)
     {
-        $sql = "SELECT * FROM tree where `left` > :left AND `right` < :right AND `level` = :level + 1 ORDER BY `left`";
+        $sql = "SELECT * FROM {$this->table} where `left` > :left AND `right` < :right AND `level` = :level + 1 ORDER BY `left`";
         $stmt = $this->dbal->executeQuery($sql, ['left' => $matadata->getLeft(), 'right' => $matadata->getRight(), 'level' => $matadata->getLevel()]);
 
         $nodes = [];
         while ($row = $stmt->fetch()) {
-            $nodes[] = [
-            'id' => $row['id'],
-            'name' => $row['name'],
-            'title' => $row['title'],
-            'level' => $row['level'],
-            ];
+            $nodes[] = $row;
         }
 
         return $nodes;
@@ -100,9 +97,9 @@ class Dbal implements PersistenceInterface {
             $i++;
             $alias = "m" . $i;
             $prev = "m" . ($i - 1);
-            $sql .= " LEFT JOIN tree $alias ON ($alias.left > $prev.left AND $alias.right < $prev.right AND $alias.level = $prev.level + 1 AND $alias.name = '$part')";
+            $sql .= " LEFT JOIN {$this->table} $alias ON ($alias.left > $prev.left AND $alias.right < $prev.right AND $alias.level = $prev.level + 1 AND $alias.name = '$part')";
         }
-        $sql = "SELECT $alias.* FROM tree m0" . $sql;
+        $sql = "SELECT $alias.* FROM {$this->table} m0" . $sql;
         $sql .= ' WHERE m0.id = 1';
 
         $node = $this->dbal->fetchAssoc($sql);
@@ -116,7 +113,7 @@ class Dbal implements PersistenceInterface {
 
     public function findByName($name)
     {
-        $sql = "SELECT * from tree WHERE name = :name LIMIT 1";
+        $sql = "SELECT * from {$this->table} WHERE name = :name LIMIT 1";
                    
         $node = $this->dbal->fetchAssoc($sql, ['name' => $name]);
 
@@ -129,7 +126,7 @@ class Dbal implements PersistenceInterface {
 
     public function getRoot()
     {
-        $root = $this->dbal->fetchAssoc("SELECT * FROM tree WHERE `left` = 1");
+        $root = $this->dbal->fetchAssoc("SELECT * FROM {$this->table} WHERE `left` = 1");
 
         if (!$root['id']) {
             throw new NotFoundException("Вершина дерева не знайдена");
@@ -148,7 +145,7 @@ class Dbal implements PersistenceInterface {
      */
     public function createRoot($id, $name, $title, $content)
     {
-        $this->dbal->executeUpdate('INSERT INTO `tree` VALUES (?, ?, ?, ?, 1, 2, 1)', [$id, $name, $title, $content]);
+        $this->dbal->executeUpdate("INSERT INTO {$this->table} VALUES (?, ?, ?, ?, 1, 2, 1)", [$id, $name, $title, $content]);
     }
 
     /**
@@ -160,7 +157,7 @@ class Dbal implements PersistenceInterface {
      */
     public function updateNode($id, $newName, $newTitle, $newContent)
     {
-        $this->dbal->executeUpdate('UPDATE `tree` SET `name` = ?, `title` = ?, content = ? WHERE `id` = ?', [$newName, $newTitle, $newContent, $id]);
+        $this->dbal->executeUpdate("UPDATE {$this->table} SET `name` = ?, `title` = ?, content = ? WHERE `id` = ?", [$newName, $newTitle, $newContent, $id]);
     }
 
     /**
@@ -174,8 +171,8 @@ class Dbal implements PersistenceInterface {
     {
         $this->dbal->beginTransaction();
         try {
-            $this->dbal->executeUpdate('UPDATE `tree` SET `right` = `right` + 2, `left` = IF(`left` > ?, `left` + 2, `left`) WHERE `right` >= ?', [$matadata->getRight(), $matadata->getRight()]);
-            $this->dbal->executeUpdate('INSERT INTO `tree` SET `id` = ?, `name` = ?, `title` = ?, `content` = ?, `left` = ?, `right` = ? + 1, `level` = ? + 1', [$id, $name, $title, $content, $matadata->getRight(), $matadata->getRight(), $matadata->getLevel()]);
+            $this->dbal->executeUpdate("UPDATE {$this->table} SET `right` = `right` + 2, `left` = IF(`left` > ?, `left` + 2, `left`) WHERE `right` >= ?", [$matadata->getRight(), $matadata->getRight()]);
+            $this->dbal->executeUpdate("INSERT INTO {$this->table} SET `id` = ?, `name` = ?, `title` = ?, `content` = ?, `left` = ?, `right` = ? + 1, `level` = ? + 1", [$id, $name, $title, $content, $matadata->getRight(), $matadata->getRight(), $matadata->getLevel()]);
             $this->dbal->commit();
 
         } catch (\Exception $e) {
@@ -189,8 +186,8 @@ class Dbal implements PersistenceInterface {
     {
         $this->dbal->beginTransaction();
         try {
-            $this->dbal->executeUpdate('DELETE FROM `tree` WHERE `left` >= :left AND `right` <= :right', ['left' => $matadata->getLeft(), 'right' => $matadata->getRight()]);
-            $this->dbal->executeUpdate('UPDATE `tree` SET `left` = IF(`left` > :left, `left` - (:right - :left + 1), `left`), `right` = `right` - (:right - :left + 1) WHERE `right` > :right', ['left' => $matadata->getLeft(), 'right' => $matadata->getRight()]);
+            $this->dbal->executeUpdate("DELETE FROM {$this->table} WHERE `left` >= :left AND `right` <= :right", ['left' => $matadata->getLeft(), 'right' => $matadata->getRight()]);
+            $this->dbal->executeUpdate("UPDATE {$this->table} SET `left` = IF(`left` > :left, `left` - (:right - :left + 1), `left`), `right` = `right` - (:right - :left + 1) WHERE `right` > :right", ['left' => $matadata->getLeft(), 'right' => $matadata->getRight()]);
             $this->dbal->commit();
         } catch (\Exception $e) {
             $this->dbal->rollBack();
