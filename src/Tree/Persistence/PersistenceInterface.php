@@ -10,7 +10,7 @@ interface PersistenceInterface {
     public function parent(Metadata $matadata);
     public function parents(Metadata $matadata);
     public function children(Metadata $matadata);
-    public function findByPath($path);
+    public function findByPath($path, $startNodeId);
     public function findByName($name);
     public function getRoot();
     public function createRoot($id, $name, $title, $content);

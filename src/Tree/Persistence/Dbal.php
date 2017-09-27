@@ -54,7 +54,7 @@ class Dbal implements PersistenceInterface {
      */
     public function parents(Metadata $matadata)
     {
-        $sql = "SELECT * FROM {$this->table} WHERE `left` <= :left and `right` >= :right and level <> 1 ORDER BY `left` ";
+        $sql = "SELECT * FROM {$this->table} WHERE `left` < :left and `right` > :right and level <> 1 ORDER BY `left` ";
         $stmt = $this->dbal->executeQuery($sql, ['left' => $matadata->getLeft(), 'right' => $matadata->getRight()]);
 
         $nodes = [];
@@ -83,10 +83,11 @@ class Dbal implements PersistenceInterface {
     }
 
     /**
-     * @param  string|mixed $path       path to node
+     * @param  mixed $path              path to node
+     * @param  string $startNodeId      id of start node
      * @return mixed
      */
-    public function findByPath($path)
+    public function findByPath($path, $startNodeId)
     {
         $parts = explode('/', $path);
 
@@ -100,9 +101,9 @@ class Dbal implements PersistenceInterface {
             $sql .= " LEFT JOIN {$this->table} $alias ON ($alias.left > $prev.left AND $alias.right < $prev.right AND $alias.level = $prev.level + 1 AND $alias.name = '$part')";
         }
         $sql = "SELECT $alias.* FROM {$this->table} m0" . $sql;
-        $sql .= ' WHERE m0.id = 1';
+        $sql .= ' WHERE m0.id = ?';
 
-        $node = $this->dbal->fetchAssoc($sql);
+        $node = $this->dbal->fetchAssoc($sql, [$startNodeId]);
 
         if (!$node['id']) {
             throw new NotFoundException("За шляхом '{$path}' нічого не знайдено");

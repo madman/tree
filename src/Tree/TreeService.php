@@ -83,9 +83,9 @@ class TreeService {
         return $node;
     }
 
-    public function findByPath($path)
+    public function findByPath($path, Node $startNode)
     {
-        $raw = $this->storage->findByPath($path);
+        $raw = $this->storage->findByPath($path, $startNode->getId());
 
         $metadata = new Metadata($raw['left'], $raw['right'], $raw['level']);
         $node = new Node(Uuid::fromString($raw['id']), $raw['name'], $raw['title'], $raw['content']);

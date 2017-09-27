@@ -22,7 +22,10 @@ class FindByPathController {
     public function __invoke(Request $request, $path)
     {
         try {
-            $node = $this->service->findByPath($path);
+            $root = $this->service->getRoot();
+
+
+            $node = $this->service->findByPath($path, $root);
 
             return new JsonResponse(['node' => $node]);
         } catch (NotFoundException $e) {
