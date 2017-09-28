@@ -104,7 +104,7 @@ class TreeService {
 
         $this->map->add($node, $metadata);
 
-        return $parentNode;
+        return $node;
     }
 
     public function parents(Node $node)
