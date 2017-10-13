@@ -19,7 +19,7 @@ class ServiceProvider implements ServiceProviderInterface {
             );
         };
 
-        $pimple['api.version'] = '0.0.1';
+        $pimple['api.version'] = '0.1.0';
 
         $pimple['service.tree.persistence'] = function() use ($pimple) {
             return new \Tree\Persistence\Dbal($pimple['db'], 'myths');
