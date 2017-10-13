@@ -37,9 +37,9 @@ class Dbal implements PersistenceInterface {
      * @param  Metadata   $node
      * @return mixed
      */
-    public function parent(Metadata $matadata)
+    public function parent(Metadata $metadata)
     {
-        $parent = $this->dbal->fetchAssoc("SELECT * FROM {$this->table} WHERE `left` < ? AND `right` > ? and level = ? - 1 ", [$matadata->getLeft(), $matadata->getRight(), $matadata->getLevel()]);
+        $parent = $this->dbal->fetchAssoc("SELECT * FROM {$this->table} WHERE `left` < ? AND `right` > ? and level = ? - 1 ", [$metadata->getLeft(), $metadata->getRight(), $metadata->getLevel()]);
 
         if (!$parent['id']) {
             throw new NotFoundException("Батьківський елемент не знайдено");
@@ -49,13 +49,13 @@ class Dbal implements PersistenceInterface {
     }
 
     /**
-     * @param  Metadata   $matadata
+     * @param  Metadata   $metadata
      * @return mixed
      */
-    public function parents(Metadata $matadata)
+    public function parents(Metadata $metadata)
     {
         $sql = "SELECT * FROM {$this->table} WHERE `left` < :left and `right` > :right and level <> 1 ORDER BY `left` ";
-        $stmt = $this->dbal->executeQuery($sql, ['left' => $matadata->getLeft(), 'right' => $matadata->getRight()]);
+        $stmt = $this->dbal->executeQuery($sql, ['left' => $metadata->getLeft(), 'right' => $metadata->getRight()]);
 
         $nodes = [];
         while ($row = $stmt->fetch()) {
@@ -66,13 +66,13 @@ class Dbal implements PersistenceInterface {
     }
 
     /**
-     * @param  Metadata   $matadata
+     * @param  Metadata   $metadata
      * @return mixed
      */
-    public function children(Metadata $matadata)
+    public function children(Metadata $metadata)
     {
         $sql = "SELECT * FROM {$this->table} where `left` > :left AND `right` < :right AND `level` = :level + 1 ORDER BY `left`";
-        $stmt = $this->dbal->executeQuery($sql, ['left' => $matadata->getLeft(), 'right' => $matadata->getRight(), 'level' => $matadata->getLevel()]);
+        $stmt = $this->dbal->executeQuery($sql, ['left' => $metadata->getLeft(), 'right' => $metadata->getRight(), 'level' => $metadata->getLevel()]);
 
         $nodes = [];
         while ($row = $stmt->fetch()) {
@@ -162,18 +162,18 @@ class Dbal implements PersistenceInterface {
     }
 
     /**
-     * @param Metadata   $matadata
+     * @param Metadata   $metadata
      * @param string $id
      * @param string $name
      * @param string $title
      * @param string $text
      */
-    public function addChildTo(Metadata $matadata, $id, $name, $title, $content = '')
+    public function addChildTo(Metadata $metadata, $id, $name, $title, $content = '')
     {
         $this->dbal->beginTransaction();
         try {
-            $this->dbal->executeUpdate("UPDATE {$this->table} SET `right` = `right` + 2, `left` = IF(`left` > ?, `left` + 2, `left`) WHERE `right` >= ?", [$matadata->getRight(), $matadata->getRight()]);
-            $this->dbal->executeUpdate("INSERT INTO {$this->table} SET `id` = ?, `name` = ?, `title` = ?, `content` = ?, `left` = ?, `right` = ? + 1, `level` = ? + 1", [$id, $name, $title, $content, $matadata->getRight(), $matadata->getRight(), $matadata->getLevel()]);
+            $this->dbal->executeUpdate("UPDATE {$this->table} SET `right` = `right` + 2, `left` = IF(`left` > ?, `left` + 2, `left`) WHERE `right` >= ?", [$metadata->getRight(), $metadata->getRight()]);
+            $this->dbal->executeUpdate("INSERT INTO {$this->table} SET `id` = ?, `name` = ?, `title` = ?, `content` = ?, `left` = ?, `right` = ? + 1, `level` = ? + 1", [$id, $name, $title, $content, $metadata->getRight(), $metadata->getRight(), $metadata->getLevel()]);
             $this->dbal->commit();
 
         } catch (\Exception $e) {
@@ -183,12 +183,12 @@ class Dbal implements PersistenceInterface {
         }
     }
 
-    public function delete(Metadata $matadata)
+    public function delete(Metadata $metadata)
     {
         $this->dbal->beginTransaction();
         try {
-            $this->dbal->executeUpdate("DELETE FROM {$this->table} WHERE `left` >= :left AND `right` <= :right", ['left' => $matadata->getLeft(), 'right' => $matadata->getRight()]);
-            $this->dbal->executeUpdate("UPDATE {$this->table} SET `left` = IF(`left` > :left, `left` - (:right - :left + 1), `left`), `right` = `right` - (:right - :left + 1) WHERE `right` > :right", ['left' => $matadata->getLeft(), 'right' => $matadata->getRight()]);
+            $this->dbal->executeUpdate("DELETE FROM {$this->table} WHERE `left` >= :left AND `right` <= :right", ['left' => $metadata->getLeft(), 'right' => $metadata->getRight()]);
+            $this->dbal->executeUpdate("UPDATE {$this->table} SET `left` = IF(`left` > :left, `left` - (:right - :left + 1), `left`), `right` = `right` - (:right - :left + 1) WHERE `right` > :right", ['left' => $metadata->getLeft(), 'right' => $metadata->getRight()]);
             $this->dbal->commit();
         } catch (\Exception $e) {
             $this->dbal->rollBack();

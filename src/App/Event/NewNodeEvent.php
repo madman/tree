@@ -22,12 +22,4 @@ class NewNodeEvent {
      */
     public $content;
 
-/*
-    static public function loadValidatorMetadata(ClassMetadata $metadata)
-    {
-        $metadata->addPropertyConstraint('name', new Assert\NotBlank());
-        $metadata->addPropertyConstraint('name', new Assert\Length(array('min' => 3)));
-        $metadata->addPropertyConstraint('title', new Assert\NotBlank());
-        $metadata->addPropertyConstraint('title', new Assert\Length(array('min' => 3)));
-    }*/
 }

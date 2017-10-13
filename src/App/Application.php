@@ -55,7 +55,7 @@ class Application extends \Silex\Application {
         $app->register(new \App\Provider\SecurityProvider(), [
             'security.jwt' => [
                 'secret_key' => 'tree_key_tree',
-                'life_time'  => 600,
+                'life_time'  => 60000,
                 'options'    => [
                     'username_claim' => 'name', // default name, option specifying claim containing username
                     'header_name' => 'X-Access-Token', // default null, option for usage normal oauth2 header

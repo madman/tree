@@ -60,6 +60,11 @@ class ControllerProvider implements ControllerProviderInterface {
             ->post('/addchildto/{id}', "app.controller.addchildto")
             ->bind('addchildto');
 
+        $controllers
+            ->post('/update/{id}', "app.controller.update")
+            ->bind('update');
+
+
         return $controllers;
     }
 }

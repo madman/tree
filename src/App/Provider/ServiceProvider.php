@@ -73,5 +73,15 @@ class ServiceProvider implements ServiceProviderInterface {
             return new \App\Controller\AddChildToController($pimple['service.tree'], $pimple['form.factory']);
         };
 
+        $pimple['app.controller.update'] = function() use ($pimple) {
+            return new \App\Controller\UpdateNodeController($pimple['service.tree'], $pimple['form.factory']);
+        };
+/*
+        $pimple['app.controller.delete'] = function() use ($pimple) {
+            return new \App\Controller\AddChildToController($pimple['service.tree'], $pimple['form.factory']);
+        };
+*/
+
+
     }
 }

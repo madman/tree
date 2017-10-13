@@ -140,12 +140,21 @@ class TreeService {
 
     }
 
-
     public function addChildTo(Node $node, Node $child)
     {
         $this->storage->addChildTo($this->map->getMetadata($node->getId()), $child->getId()->toString(), $child->getName(), $child->getTitle(), $child->getContent());
 
         return $this->findById($child->getId()); // cache metadata
+    }
+
+    public function delete(Node $node)
+    {
+        $this->storage->delete($this->map->getMetadata($node->getId()));
+    }
+
+    public function update(Node $updated)
+    {
+        $this->storage->updateNode($updated->getId(), $updated->getName(), $updated->getTitle(), $updated->getContent());
     }
 
 }
