@@ -31,7 +31,7 @@ class FindByIdController {
                 'errors' => [
                     sprintf('Node with id "%s" not found', $id)
                 ]
-            ]);
+            ], 404);
         }
     }
 }

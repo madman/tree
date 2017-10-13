@@ -4,13 +4,13 @@ namespace App\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use App\Event\UpdateNodeEvent;
-use App\Type\UpdateNodeDataType;
 use Tree\TreeService;
+use App\Event\DeleteNodeEvent;
+use App\Type\NodeIdType;
 use Tree\Node;
 use Ramsey\Uuid\Uuid;
 
-class UpdateNodeController {
+class DeleteNodeController {
 
     /**
      * @var TreeService
@@ -36,28 +36,43 @@ class UpdateNodeController {
             ], 404);
         }
 
-        $event = UpdateNodeEvent::fromNode($node);
+        $event = new DeleteNodeEvent();
 
         $form = $this->form_factory
-            ->createBuilder(UpdateNodeDataType::class, $event)
+            ->createBuilder(NodeIdType::class, $event)
             ->getForm();
            
-        $form->submit($request->request->all(), false);
+        $form->submit($request->request->all());
 
         if ($form->isValid()) {
             $event = $form->getData();
 
-            $new = new Node($node->getId(), $event->name, $event->title, $event->content);
+            if (!$node->getId()->equals(Uuid::fromString($event->id))) {
+                return new JsonResponse([
+                    'errors' => [
+                        sprintf('Target node id "%s" not equals to confirmation "%s"', $node->getId(), $event->id)
+                    ],
+                ], 400);
+            }
 
             try {
-                $this->service->update($new);
+                try {
+                    $parent = $this->service->parent($node);
+                } catch (NotFoundException $e) {
+                    $parent = null;
+                }    
 
-                return new JsonResponse(['new' => $new]);
+                $this->service->delete($node);
+
+                return new JsonResponse([
+                    'deleted' => $node->getId(),
+                    'parent'  => $parent,
+                ]);
             } catch (\Doctrine\DBAL\DBALException $e) {
 
                 return new JsonResponse([
                     'errors' => [
-                        sprintf('Cannot update node "%s"', $id)
+                        sprintf('Cannot delete node "%s"', $id)
                     ],
                 ], 500);
             }

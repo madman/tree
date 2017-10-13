@@ -64,6 +64,11 @@ class ControllerProvider implements ControllerProviderInterface {
             ->post('/update/{id}', "app.controller.update")
             ->bind('update');
 
+        $controllers
+            ->post('/delete/{id}', "app.controller.delete")
+            ->bind('delete');
+
+
 
         return $controllers;
     }
