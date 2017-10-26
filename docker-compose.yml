@@ -1,5 +1,7 @@
 nginx:
   build: ./docker/nginx
+  environment:
+    - SERVICE_NAME=tree
   ports:
     - "8081:80"
   links:
@@ -11,6 +13,8 @@ nginx:
 
 fpm:
   build: ./docker/fpm
+  environment:
+    - SERVICE_IGNORE=true
   volumes_from:
     - files
   links:
@@ -36,6 +40,7 @@ console:
 mysql:
   image: mysql:5.5
   environment:
+    - SERVICE_IGNORE=true
     - MYSQL_ROOT_PASSWORD=tree
     - MYSQL_DATABASE=tree
     - MYSQL_USER=tree
