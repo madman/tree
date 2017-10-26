@@ -19,6 +19,11 @@ class SecurityProvider implements ServiceProviderInterface {
                 'pattern' => 'api/v1/login',
                 'anonymous' => true,
             ],
+            'version' => [
+                'pattern' => 'api/v1/',
+                'anonymous' => true,
+            ],
+
             'secured' => [
                 'pattern' => '^.*$',
                 'logout' => [
